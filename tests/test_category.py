@@ -19,21 +19,15 @@ import unittest
 from lxml import objectify
 from mock import Mock
 import trytond.tests.test_tryton
-from trytond.tests.test_tryton import POOL, DB_NAME, USER, CONTEXT
+from trytond.tests.test_tryton import POOL, DB_NAME, USER, CONTEXT, ModuleTestCase
 from trytond.transaction import Transaction
 
 
-class TestCategory(unittest.TestCase):
+class TestCategory(ModuleTestCase):
     '''
     Test product
     '''
-
-    def setUp(self):
-        """
-        Set up data used in the tests.
-        this method is called before each test function execution.
-        """
-        trytond.tests.test_tryton.install_module('nereid_catalog_icecat')
+    module = 'nereid_catalog_icecat'
 
     def test0010categories(self):
         '''
@@ -74,20 +68,20 @@ class TestCategory(unittest.TestCase):
 
             # Import the product
             product = Product.create_from_icecat_data(objectified_xml)
-            self.assertEqual(product.nodes[0].name, "monitors CRT")
+            self.assertEqual(product.nodes[0].node.name, "monitors CRT")
 
             # Test if both translated values got saved
             with Transaction().set_context(language='de_DE'):
                 product = Product(product.id)
-                self.assertEqual(product.nodes[0].name, "monitoren CRT")
+                self.assertEqual(product.nodes[0].node.name, "monitoren CRT")
 
             with Transaction().set_context(language='bg_BG'):
                 product = Product(product.id)
-                self.assertEqual(product.nodes[0].name, "monitors CRT")
+                self.assertEqual(product.nodes[0].node.name, "monitors CRT")
 
             with Transaction().set_context(language='cz_CZ'):
                 product = Product(product.id)
-                self.assertEqual(product.nodes[0].name, "monitors CRT")
+                self.assertEqual(product.nodes[0].node.name, "monitors CRT")
 
 
 def suite():

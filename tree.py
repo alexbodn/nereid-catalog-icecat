@@ -15,7 +15,7 @@ from trytond.model import fields
 from trytond.pool import Pool, PoolMeta
 from trytond.transaction import Transaction
 from nereid.helpers import slugify
-from trytond.config import CONFIG
+from trytond.config import config
 import requests
 from lxml import objectify
 
@@ -105,7 +105,7 @@ class Node:
         Get CategoriesList.xml content from local if possible otherwise remote
         """
         directory = os.path.join(
-            CONFIG['data_path'],
+            config.get('options', 'data_path'),
             Transaction().cursor.dbname,
             'nereid_catalog_icecat'
         )
@@ -114,11 +114,13 @@ class Node:
 
         filename = os.path.join(directory, "CategoriesList.xml")
         if not os.path.isfile(filename):
+            icecat_username = config.get('options', 'icecat_username')
+            icecat_password = config.get('options', 'icecat_password')
             categorieslist_url = "http://data.icecat.biz/export/freexml/refs/"\
                                  "CategoriesList.xml.gz"
             categorieslist = gzip.GzipFile(fileobj=StringIO(requests.get(
                 categorieslist_url,
-                auth=(CONFIG['icecat_username'], CONFIG['icecat_password'])
+                auth=(icecat_username, icecat_password)
             ).content))
 
             categorieslist_content = categorieslist.read()

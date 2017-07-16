@@ -23,15 +23,19 @@ class Product:
         :param data: lxml objectified record of the product
         """
         TreeNode = Pool().get('product.tree_node')
+        ProductNodeRelationship = Pool().get(
+            'product.product-product.tree_node'
+        )
 
         new_node = TreeNode._get_or_create_icecat_if_not_exists(
             int(data.Product.Category.get('ID'))
         )
 
         # add category to product
-        self.write([self], {
-            'nodes': [('add', [new_node])]
-        })
+        ProductNodeRelationship.create([{
+            'product': self,
+            'node': new_node,
+        }])
 
     @classmethod
     def create_from_icecat_data(cls, data):
